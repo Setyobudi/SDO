@@ -1,0 +1,36 @@
+2019-11-08T13:15:37+00:00 CRITICAL Uncaught Exception: Error: The access_token provided is invalid. in C:\xampp\htdocs\SDO\wp-content\plugins\sw_core\sw_plugins\sw-instagram\sw-instagram.php:83
+Stack trace:
+#0 C:\xampp\htdocs\SDO\wp-content\plugins\sw_core\sw_plugins\sw-instagram\sw-instagram.php(91): sw_instagram_widget->http('https://api.ins...', 'GET')
+#1 C:\xampp\htdocs\SDO\wp-content\plugins\sw_core\sw_plugins\sw-instagram\includes\default.php(12): sw_instagram_widget->Get_Instagram_Gallery('5725112895', '5725112895.1677...', '5')
+#2 C:\xampp\htdocs\SDO\wp-content\plugins\sw_core\sw_plugins\sw-instagram\sw-instagram.php(260): include('C:\\xampp\\htdocs...')
+#3 C:\xampp\htdocs\SDO\wp-includes\shortcodes.php(325): sw_instagram_widget->INST_Shortcode(Array, '', 'instagram')
+#4 [internal function]: do_shortcode_tag(Array)
+#5 C:\xampp\htdocs\SDO\wp-includes\shortcodes.php(199): preg_replace_callback('/\\[(\\[?)(instag...', 'do_shortcode_ta...', '[instagram titl...')
+#6 C:\xampp\htdocs\SDO\wp-content\plugins\js_composer\include\helpers\helpers. di C:\xampp\htdocs\SDO\wp-content\plugins\sw_core\sw_plugins\sw-instagram\sw-instagram.php pada baris 83
+
+2019-11-08T13:15:52+00:00 CRITICAL Uncaught Exception: Error: The access_token provided is invalid. in C:\xampp\htdocs\SDO\wp-content\plugins\sw_core\sw_plugins\sw-instagram\sw-instagram.php:83
+Stack trace:
+#0 C:\xampp\htdocs\SDO\wp-content\plugins\sw_core\sw_plugins\sw-instagram\sw-instagram.php(91): sw_instagram_widget->http('https://api.ins...', 'GET')
+#1 C:\xampp\htdocs\SDO\wp-content\plugins\sw_core\sw_plugins\sw-instagram\includes\default.php(12): sw_instagram_widget->Get_Instagram_Gallery('5725112895', '5725112895.1677...', '5')
+#2 C:\xampp\htdocs\SDO\wp-content\plugins\sw_core\sw_plugins\sw-instagram\sw-instagram.php(260): include('C:\\xampp\\htdocs...')
+#3 C:\xampp\htdocs\SDO\wp-includes\shortcodes.php(325): sw_instagram_widget->INST_Shortcode(Array, '', 'instagram')
+#4 [internal function]: do_shortcode_tag(Array)
+#5 C:\xampp\htdocs\SDO\wp-includes\shortcodes.php(199): preg_replace_callback('/\\[(\\[?)(instag...', 'do_shortcode_ta...', '<p>[vc_row full...')
+#6 C:\xampp\htdocs\SDO\wp-includes\class-wp-hook.php(286): do_shortcode('<p>[v di C:\xampp\htdocs\SDO\wp-content\plugins\sw_core\sw_plugins\sw-instagram\sw-instagram.php pada baris 83
+
+2019-11-08T13:30:42+00:00 CRITICAL syntax error, unexpected 'endwhile' (T_ENDWHILE) di C:\xampp\htdocs\SDO\wp-content\plugins\sw_woocommerce\includes\themes\sw-woo-tab-category-slider\theme1.php pada baris 186
+
+2019-11-08T13:31:19+00:00 CRITICAL Uncaught Error: Call to undefined function get_wcmp_product_vendors() in C:\xampp\htdocs\SDO\wp-content\plugins\sw_woocommerce\includes\themes\sw-woo-tab-category-slider\theme1.php:173
+Stack trace:
+#0 C:\xampp\htdocs\SDO\wp-content\plugins\sw_woocommerce\includes\sw-widgets\sw-woo-tab-category-slider-widget.php(350): include()
+#1 C:\xampp\htdocs\SDO\wp-includes\shortcodes.php(325): sw_woo_tab_cat_slider_widget->SC_WooTab(Array, '', 'woo_tab_cat_sli...')
+#2 [internal function]: do_shortcode_tag(Array)
+#3 C:\xampp\htdocs\SDO\wp-includes\shortcodes.php(199): preg_replace_callback('/\\[(\\[?)(woo_ta...', 'do_shortcode_ta...', '[woo_tab_cat_sl...')
+#4 C:\xampp\htdocs\SDO\wp-content\plugins\js_composer\include\helpers\helpers.php(232): do_shortcode('[woo_tab_cat_sl...')
+#5 C:\xampp\htdocs\SDO\wp-content\plugins\js_composer\include\templates\shortcodes\vc_column_inner.php(50): wpb_js_remove_wpautop('[woo_tab_cat_sl...')
+#6 C:\xampp\htdocs\SDO\wp-content\plugins\js_composer\include\classes\shortcodes\shortcodes.php(4 di C:\xampp\htdocs\SDO\wp-content\plugins\sw_woocommerce\includes\themes\sw-woo-tab-category-slider\theme1.php pada baris 173
+
+2019-11-08T13:42:51+00:00 CRITICAL syntax error, unexpected ':' di C:\xampp\htdocs\SDO\wp-content\plugins\sw_woocommerce\includes\themes\sw-woo-tab-category-slider\theme1.php pada baris 158
+
+2019-11-08T13:48:09+00:00 CRITICAL syntax error, unexpected ':', expecting ',' or ';' di C:\xampp\htdocs\SDO\wp-content\plugins\sw_woocommerce\includes\themes\sw-woo-tab-category-slider\theme1.php pada baris 178
+

@@ -1,0 +1,113 @@
+
+---Upload files---
+Content file was not uploaded. Error: 
+
+---Upload files---
+Customizer file was not uploaded. Error: Specified file failed upload test.
+
+---Upload files---
+Redux file was not uploaded. Error: Specified file failed upload test.
+
+---Upload files---
+The import files were successfully uploaded!
+Initial max execution time = 300
+Files info:
+Site URL = http://localhost/template
+Data file = not defined!
+Widget file = C:\xampp\htdocs\template/wp-content/uploads/2019/11/widgets-1.json
+Customizer file = not defined!
+Redux files:
+not defined!
+
+---Importing widgets---
+Sidebar Left Blog : 
+
+Categories - No Title - Widget already exists
+Recent Posts - Recent Posts - Widget already exists
+Text - No Title - Widget already exists
+
+Sidebar Right Blog : 
+
+Categories - No Title - Widget already exists
+Recent Posts - Recent Posts - Widget already exists
+Text - No Title - Widget already exists
+
+Top Header : 
+
+Text - No Title - Widget already exists
+woocommerce_currency_converter - No Title - Site does not support widget
+Text - No Title - Widget already exists
+
+Top Header3 : 
+
+SW Top Widget - No Title - Widget already exists
+woocommerce_currency_converter - No Title - Site does not support widget
+Text - No Title - Widget already exists
+
+Mid Header : 
+
+Text - No Title - Widget already exists
+SW Top Widget - No Title - Widget already exists
+
+Mid Header3 : 
+
+Navigation Menu - No Title - Imported
+
+Bottom Header : 
+
+SW Top Widget - No Title - Widget already exists
+Navigation Menu - No Title - Imported
+
+Sidebar Left Product : 
+
+WooCommerce product categories - Product categories - Widget already exists
+Filter Products by Attribute - Color - Widget already exists
+Filter Products by Attribute - Size - Widget already exists
+Filter Products by Price - Price - Widget already exists
+Text - No Title - Widget already exists
+Image - No Title - Widget already exists
+
+Sidebar Right Product : 
+
+WooCommerce product categories - Categories - Widget already exists
+Filter Products by Attribute - Color - Widget already exists
+Filter Products by Attribute - Size - Widget already exists
+Filter Products by Price - price - Widget already exists
+Text - No Title - Widget already exists
+Image - No Title - Widget already exists
+
+Sidebar Left Detail Product : 
+
+WooCommerce product categories - Categories - Widget already exists
+Text - No Title - Widget already exists
+Image - No Title - Widget already exists
+
+Sidebar Right Detail Product : 
+
+WooCommerce product categories - Categories - Widget already exists
+Image - No Title - Widget already exists
+Text - No Title - Widget already exists
+
+Sidebar Bottom Detail Product : 
+
+Sw Woocommerce Related &amp; Upsell Slider widget - No Title - Widget already exists
+
+Bottom Detail Product Mobile : 
+
+Sw Woocommerce Related &amp; Upsell Slider widget - No Title - Widget already exists
+
+Filter Mobile : 
+
+Filter Products by Price - Price - Widget already exists
+Filter Products by Attribute - Color - Widget already exists
+Filter Products by Attribute - Size - Widget already exists
+
+Footer Copyright : 
+
+Image - No Title - Widget already exists
+
+Widget Search : 
+
+SW Ajax WooCommerce Search - No Title - Widget already exists
+
+

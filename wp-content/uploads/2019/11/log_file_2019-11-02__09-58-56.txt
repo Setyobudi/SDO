@@ -1,0 +1,105 @@
+
+---Downloaded files---
+The import files for: Demo Homepage 1 were successfully downloaded!
+Initial max execution time = 300
+Files info:
+Site URL = http://localhost/template
+Data file = C:\xampp\htdocs\template/wp-content/themes/emarket/lib/import/demo-1/demo-content.xml
+Widget file = C:\xampp\htdocs\template/wp-content/themes/emarket/lib/import/demo-1/widgets.json
+Customizer file = not defined!
+Options files:
+emarket_theme -> C:\xampp\htdocs\template/wp-content/themes/emarket/lib/import/demo-1/theme_options.txt 
+
+
+---Importing widgets---
+Sidebar Left Blog : 
+
+Categories - No Title - Imported
+Recent Posts - Recent Posts - Imported
+Text - No Title - Imported
+
+Sidebar Right Blog : 
+
+Categories - No Title - Imported
+Recent Posts - Recent Posts - Imported
+Text - No Title - Imported
+
+Top Header : 
+
+Text - No Title - Imported
+woocommerce_currency_converter - No Title - Site does not support widget
+Text - No Title - Imported
+
+Top Header3 : 
+
+SW Top Widget - No Title - Imported
+woocommerce_currency_converter - No Title - Site does not support widget
+Text - No Title - Imported
+
+Mid Header : 
+
+Text - No Title - Imported
+SW Top Widget - No Title - Imported
+
+Mid Header3 : 
+
+Navigation Menu - No Title - Imported
+
+Bottom Header : 
+
+SW Top Widget - No Title - Imported
+Navigation Menu - No Title - Imported
+
+Sidebar Left Product : 
+
+WooCommerce product categories - Product categories - Imported
+Filter Products by Attribute - Color - Imported
+Filter Products by Attribute - Size - Imported
+Filter Products by Price - Price - Imported
+Text - No Title - Imported
+Image - No Title - Imported
+
+Sidebar Right Product : 
+
+WooCommerce product categories - Categories - Imported
+Filter Products by Attribute - Color - Imported
+Filter Products by Attribute - Size - Imported
+Filter Products by Price - price - Imported
+Text - No Title - Imported
+Image - No Title - Imported
+
+Sidebar Left Detail Product : 
+
+WooCommerce product categories - Categories - Imported
+Text - No Title - Imported
+Image - No Title - Imported
+
+Sidebar Right Detail Product : 
+
+WooCommerce product categories - Categories - Imported
+Image - No Title - Imported
+Text - No Title - Imported
+
+Sidebar Bottom Detail Product : 
+
+Sw Woocommerce Related &amp; Upsell Slider widget - No Title - Imported
+
+Bottom Detail Product Mobile : 
+
+Sw Woocommerce Related &amp; Upsell Slider widget - No Title - Imported
+
+Filter Mobile : 
+
+Filter Products by Price - Price - Imported
+Filter Products by Attribute - Color - Imported
+Filter Products by Attribute - Size - Imported
+
+Footer Copyright : 
+
+Image - No Title - Imported
+
+Widget Search : 
+
+SW Ajax WooCommerce Search - No Title - Imported
+
+
