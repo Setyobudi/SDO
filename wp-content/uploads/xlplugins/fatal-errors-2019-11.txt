@@ -58,3 +58,17 @@ Stack trace:
 #4 [internal function]: do_shortcode_tag(Array)
 #5 C:\xampp\htdocs\SDO\wp-includes\shortcodes.php(199): preg_replace_callback('/\\[(\\[?)(instag...', 'do_shortcode_ta...', '[instagram titl...')
 #6 C:\xampp\htdocs\SDO\wp-content\plugins\js_composer\include\helpers\helpers.p
+
+Nov 11, 2019 09.31.47: Maximum execution time of 300 seconds exceeded
+
+Nov 11, 2019 09.36.18: Maximum execution time of 300 seconds exceeded
+
+Nov 11, 2019 09.54.07: Uncaught Exception: Error: The access_token provided is invalid. in C:\xampp\htdocs\SDO\wp-content\plugins\sw_core\sw_plugins\sw-instagram\sw-instagram.php:83
+Stack trace:
+#0 C:\xampp\htdocs\SDO\wp-content\plugins\sw_core\sw_plugins\sw-instagram\sw-instagram.php(91): sw_instagram_widget->http('https://api.ins...', 'GET')
+#1 C:\xampp\htdocs\SDO\wp-content\plugins\sw_core\sw_plugins\sw-instagram\includes\default.php(12): sw_instagram_widget->Get_Instagram_Gallery('5725112895', '5725112895.1677...', '5')
+#2 C:\xampp\htdocs\SDO\wp-content\plugins\sw_core\sw_plugins\sw-instagram\sw-instagram.php(260): include('C:\\xampp\\htdocs...')
+#3 C:\xampp\htdocs\SDO\wp-includes\shortcodes.php(325): sw_instagram_widget->INST_Shortcode(Array, '', 'instagram')
+#4 [internal function]: do_shortcode_tag(Array)
+#5 C:\xampp\htdocs\SDO\wp-includes\shortcodes.php(199): preg_replace_callback('/\\[(\\[?)(instag...', 'do_shortcode_ta...', '<p>[vc_row full...')
+#6 C:\xampp\htdocs\SDO\wp-includes\class-wp-hook.php(286): do_shortcode('<p>[v
