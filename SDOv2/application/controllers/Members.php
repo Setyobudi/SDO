@@ -44,6 +44,32 @@ class Members extends CI_Controller {
 		}
 	}
 
+	function voucher(){
+		cek_session_members();
+		$id = $this->uri->segment(3);
+		if (isset($_POST['submit'])){
+			$this->model_reseller->profile_update($this->session->id_konsumen);
+			redirect('members/profile');
+		}else{
+			$data['title'] = 'Voucher Anda';
+			$data['record'] = $this->db->query("SELECT * FROM voucher_user a LEFT JOIN rb_voucher b ON a.id_voucher=b.id_voucher where a.id_konsumen='".$this->session->id_konsumen."' AND a.use='N' ORDER BY id_vocuser");
+			$data['rows'] = $this->db->query("SELECT voucher_user.berlaku,voucher_user.datenow,rb_voucher.code,rb_voucher.id_voucher,voucher_user.use,rb_voucher.nama_voucher,rb_voucher.diskon,rb_voucher.max,rb_voucher.date_now,rb_voucher.date_exp,rb_voucher.min_trx FROM voucher_user JOIN rb_konsumen ON voucher_user.id_konsumen = rb_konsumen.id_konsumen JOIN rb_voucher ON voucher_user.id_voucher = rb_voucher.id_voucher where voucher_user.id_konsumen='".$this->session->id_konsumen."'")->row_array();
+			$this->template->load(template().'/template',template().'/reseller/voucher',$data);
+		}
+	}
+
+	public function vocdetails(){
+		$ids = $this->uri->segment(3);
+		$dat = $this->db->query("SELECT * FROM rb_voucher where code='$ids'");
+	    $row = $dat->row();
+	    $total = $dat->num_rows();
+	        if ($total == 0){
+	        	redirect('main');
+	        }
+		$data['title'] = $row->nama_voucher;
+		$data['record'] = $this->model_app->view_where('rb_voucher',array('code'=>$row->code))->row_array();
+		$this->template->load(template().'/template',template().'/reseller/vouch_detail',$data);
+	}
 
 	function reseller(){
 		cek_session_members();
@@ -226,6 +252,10 @@ class Members extends CI_Controller {
 			$where1 = array('id_penjualan'=>$this->session->idp);
 			$this->model_app->update('rb_penjualan', $data1, $where1);
 
+			$data2 = array('diskvoucher'=>$this->input->post('total'));
+			$where2 = array('id_penjualan'=>$this->session->idp);
+			$this->model_app->update('rb_penjualan_detail', $data2, $where2);
+
 			$email_tujuan = $kons['email'];
 			$tglaktif = date("d-m-Y H:i:s");
 
@@ -389,5 +419,29 @@ class Members extends CI_Controller {
 		cek_session_members();
 		$this->session->sess_destroy();
 		redirect('main');
+	}
+
+	function tgl_indo($tanggal){
+		$bulan = array (
+			1 =>   'Januari',
+			'Februari',
+			'Maret',
+			'April',
+			'Mei',
+			'Juni',
+			'Juli',
+			'Agustus',
+			'September',
+			'Oktober',
+			'November',
+			'Desember'
+		);
+		$pecahkan = explode('-', $tanggal);
+		
+		// variabel pecahkan 0 = tanggal
+		// variabel pecahkan 1 = bulan
+		// variabel pecahkan 2 = tahun
+	 
+		return $pecahkan[2] . ' ' . $bulan[ (int)$pecahkan[1] ] . ' ' . $pecahkan[0];
 	}
 }

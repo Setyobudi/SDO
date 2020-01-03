@@ -85,12 +85,15 @@
                             <table id="example11" class="table table-bordered table-striped">
                               <thead>
                                 <tr>
-                                  <th style='width:40px'>No</th>
-                                  <th>Kode Transaksi</th>
-                                  <th>Nama Konsumen</th>
-                                  <th>Waktu Transaksi</th>
-                                  <th>Status</th>
-                                  <th>Total</th>
+                                <th style='width:40px'>No</th>
+                                <th>Kode Transaksi</th>
+                                <th>Nama Konsumen</th>
+                                <th>Kurir</th>
+                                <th>Status</th>
+                                <th>Voucher</th>
+                                <th>Total Asli + Ongkir</th>
+                                <th>Total - Voucher</th>
+                                <th></th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -98,17 +101,38 @@
                               $no = 1;
                               foreach ($penjualan->result_array() as $row){
                               if ($row['proses']=='0'){ $proses = '<i class="text-danger">Pending</i>'; $status = 'Proses'; $icon = 'star-empty'; $ubah = 1; }elseif($row['proses']=='1'){ $proses = '<i class="text-success">Proses</i>'; $status = 'Pending'; $icon = 'star text-yellow'; $ubah = 0; }else{ $proses = '<i class="text-info">Konfirmasi</i>'; $status = 'Proses'; $icon = 'star'; $ubah = 1; }
-                              $total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
-                              echo "<tr><td>$no</td>
-                                        <td>$row[kode_transaksi]</td>
-                                        <td><a href='".base_url()."administrator/detail_konsumen/$row[id_konsumen]'>$row[nama_lengkap]</a></td>
-                                        <td>$row[waktu_transaksi]</td>
-                                        <td>$proses</td>
-                                        <td style='color:red;'>Rp ".rupiah($total['total'])."</td>
-                                    </tr>";
-                                $no++;
+                              #$total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+                              $qwer = $this->db->query("SELECT diskvoucher as total FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+                              if($qwer[total]=='0'){
+                                $total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total, a.id_penjualan FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+                                $statvoucher = 'Tidak';
+                                $jumlah_asli = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total, a.id_penjualan FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+              
+                              }else{
+                                $total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as zz, a.diskvoucher-a.diskon as total, a.id_penjualan FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+                                $jumlahvoucher = $total[zz]-$qwer[total];
+                                $statvoucher = 'Ya - '.rupiah($jumlahvoucher);
+                                $jumlah_asli = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total, a.id_penjualan FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+
                               }
-                            ?>
+                              echo "<tr><td>$no</td>
+                              <td>$row[kode_transaksi]</td>
+                              <td><a href='".base_url()."administrator/detail_konsumen/$row[id_konsumen]'>$row[nama_lengkap]</a></td>
+                              <td><span style='text-transform:uppercase'>$row[kurir]</span> - $row[service]</td>
+                              <td>$proses</td>
+                              <td>$statvoucher</td>
+                              <td>Rp ".rupiah($jumlah_asli['total']+$row['ongkir'])."</td>
+                              <td style='color:red;'>Rp ".rupiah($total['total']+$row['ongkir'])."</td>
+                              <td><center>
+                                <a class='btn btn-success btn-xs' title='Detail Data' href='".base_url()."reseller/detail_penjualan/$row[id_penjualan]'><span class='glyphicon glyphicon-search'></span> Detail</a>
+                                <a class='btn btn-primary btn-xs' title='$status Data' href='".base_url()."reseller/proses_penjualan/$row[id_penjualan]/$ubah' onclick=\"return confirm('Apa anda yakin untuk ubah status jadi $status?')\"><span class='glyphicon glyphicon-$icon'></span></a>
+                                <a class='btn btn-warning btn-xs' title='Edit Data' href='".base_url()."reseller/edit_penjualan/$row[id_penjualan]'><span class='glyphicon glyphicon-edit'></span></a>
+                                <a class='btn btn-danger btn-xs' title='Delete Data' href='".base_url()."reseller/delete_penjualan/$row[id_penjualan]' onclick=\"return confirm('Apa anda yakin untuk hapus Data ini?')\"><span class='glyphicon glyphicon-remove'></span></a>
+                              </center></td>
+                          </tr>";
+                      $no++;
+                    }
+                  ?>
                             </tbody>
                           </table>
                           </div>
@@ -189,7 +213,8 @@
                               echo "<div class='alert alert-success'><b>Total Penjualan anda Pada Tahun $tahun :</b> </div>
                                     <table class='table table-striped table-condensed'>
                                       <tr><td width='190px'>Penjualan Produk Perusahaan</td>    <td style='color:red'> : Rp ".rupiah($penjualan_perusahaan['total'])."</td></tr>
-                                      <tr><td>Jumlah Produk Terjual</td>                        <td style='color:red'> : ".rupiah($penjualan_perusahaan['produk'])." Produk</td></tr>
+                                      <tr><td width='190px'>Penjualan Produk Pribadi</td>    <td style='color:red'> : Rp ".rupiah($penjualan['total'])."</td></tr>
+                                      <tr><td>Jumlah Produk Terjual</td>                        <td style='color:red'> : ".rupiah($penjualan['produk'])." Produk</td></tr>
                                     </table>
 
                                   <table class='table table-bordered table-striped table-condensed'>
@@ -205,20 +230,29 @@
                                         for ($i=1; $i <=12 ; $i++) { 
                                           $bulan = $tahun."-".sprintf("%02d", $i);
                                           $ppb = $this->db->query("SELECT sum((a.jumlah*a.harga_jual)-a.diskon) as total, sum(a.jumlah) as produk FROM `rb_penjualan_detail` a JOIN rb_produk b ON a.id_produk=b.id_produk
-                                                                          JOIN rb_penjualan c ON a.id_penjualan=c.id_penjualan where c.status_penjual='reseller' AND b.id_produk_perusahaan!='0' AND id_penjual='".$id_reseller."' AND c.proses='1' AND substr(c.waktu_transaksi,1,7)='$bulan'")->row_array();
+                                                                          JOIN rb_penjualan c ON a.id_penjualan=c.id_penjualan where c.status_penjual='reseller' AND  id_penjual='".$id_reseller."' AND c.proses='1' AND substr(c.waktu_transaksi,1,7)='$bulan'")->row_array();
                                           echo "<tr bgcolor='#e3e3e3'>
                                                   <td>$i</td>
                                                   <td><b>".bulan($i)."</b></td>
                                                   <td>Rp ".rupiah($ppb['total'])."</td>
-                                                  <td>";
+                                                  <td>".$ppb['produk']." Produk</td></tr>";
+                                                  /* <td>
                                                       $nomor = 1;
                                                       $rew = $this->db->query("SELECT * FROM `rb_reward` where posisi<='$ppb[total]'");
                                                       foreach ($rew->result_array() as $re) {
-                                                        echo "$nomor. $re[reward]<br>";
+                                                        $cek_reward = $this->db->query("SELECT * FROM rb_pencairan_reward where id_reseller='".$this->session->id_reseller."' AND id_reward='$re[id_reward]' AND reward_date='$bulan'");
+                                                        if ($cek_reward->num_rows()>=1){
+                                                          $text = 'line-through';
+                                                          $color = 'red';
+                                                        }else{
+                                                          $text = 'none';
+                                                          $color = 'black';
+                                                        }
+                                                        echo "<span style='text-decoration:$text; color:$color'>$nomor. $re[reward]</span><br>"; 
                                                         $nomor++;
                                                       }
                                                   echo "</td>
-                                                </tr>";
+                                                </tr>"; */
                                         }
                                   echo "</tbody></table>";
                               ?>

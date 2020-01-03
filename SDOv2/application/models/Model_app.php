@@ -81,6 +81,17 @@ class Model_app extends CI_model{
         return $this->db->get()->result_array();
     }
 
+
+    public function tigatable($aktif) {
+        $this->db->select('*');
+        $this->db->from('voucher_user');
+        $this->db->join('rb_konsumen','rb_konsumen.id_konsumen=voucher_user.id_konsumen');
+        $this->db->join('rb_voucher','rb_voucher.id_voucher=voucher_user.id_voucher');
+        $this->db->where($aktif);
+        $query = $this->db->get();
+        return $query->result();
+       }
+
     function umenu_akses($link,$id){
         return $this->db->query("SELECT * FROM modul,users_modul WHERE modul.id_modul=users_modul.id_modul AND users_modul.id_session='$id' AND modul.link='$link'")->num_rows();
     }

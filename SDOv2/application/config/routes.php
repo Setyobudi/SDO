@@ -65,6 +65,8 @@ $route = array(
     'playlist' => 'playlist',
     'polling' => 'polling',
     'tag' => 'tag',
+    'voucher' => 'voucher',
+    'landingpage' => 'landingpage',
 
     'testimoni' => 'testimoni',
     'konfirmasi' => 'konfirmasi',

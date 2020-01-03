@@ -23,10 +23,10 @@
     echo "<div class='produk col-md-2 col-xs-6'>
               <center>
                 <div style='height:140px; overflow:hidden'>
-                  <a title='$row[nama_produk]' href='".base_url()."produk/detail/$row[produk_seo]'><img style='min-height:140px; width:99%' src='".base_url()."asset/foto_produk/$foto_produk'></a>
+                  <a title='$row[nama_produk]' href='".base_url()."produk/detail/$row[id_produk]/$row[produk_seo]'><img style='min-height:140px; width:99%' src='".base_url()."asset/foto_produk/$foto_produk'></a>
                 $diskon_persen
               </div>
-              <h4 class='produk-title produk-title-list'><a title='$row[nama_produk]' href='".base_url()."produk/detail/$row[produk_seo]'>$judul</a></h4>
+              <h4 class='produk-title produk-title-list'><a title='$row[nama_produk]' href='".base_url()."produk/detail/$row[id_produk]/$row[produk_seo]'>$judul</a></h4>
               $row[nama_reseller]<br>
                 <span style='color:red;'>$harga</span><br>
                 <i>$stok</i><br><small>$row[nama_kota]</small>

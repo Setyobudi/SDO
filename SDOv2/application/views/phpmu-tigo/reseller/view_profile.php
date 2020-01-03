@@ -1,6 +1,7 @@
 <?php 
 echo "<p class='sidebar-title text-danger produk-title'> Data Profile Anda 
-        <a class='btn btn-success btn-xs pull-right' href='".base_url()."members/edit_profile'><span class='glyphicon glyphicon-edit'></span> Edit Profile</a></p>";
+        <a class='btn btn-success btn-xs pull-right' href='".base_url()."members/edit_profile'><span class='glyphicon glyphicon-edit'></span> Edit Profile</a></p>
+        <a class='btn btn-success btn-xs pull-right' href='".base_url()."members/voucher'><span class='glyphicon glyphicon-edit'></span> Voucher</a></p>";
         echo $this->session->flashdata('message'); 
         $this->session->unset_userdata('message');
         echo "<p>Berikut Informasi Data Profile anda.<br> 

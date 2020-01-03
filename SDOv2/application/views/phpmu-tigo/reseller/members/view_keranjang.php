@@ -1,4 +1,16 @@
+<?php $kodevoucher = $this->uri->segment(3); 
+$voucher=$this->db->query("SELECT * FROM rb_voucher where code='$kodevoucher'")->row_array();
+$x=$this->db->query("SELECT * FROM voucher_user a LEFT JOIN rb_voucher b ON a.id_voucher=b.id_voucher where a.id_konsumen='".$this->session->id_konsumen."' AND b.code='$kodevoucher'")->row_array();
+#echo "tanggal berlaku ".$x[berlaku];
+#echo "<br>";
+#echo "tanggal sekarang ".date('Y-m-d');
 
+#$bayar = "<div id='totalbayar'>";
+
+#echo $totalbayar;
+
+
+?>
 <p class='sidebar-title text-danger produk-title'> Berikut Data Pesanan anda</p>
 <div class='col-md-8'>
 <?php 
@@ -34,27 +46,64 @@ echo "<form action='".base_url()."members/selesai_belanja' method='POST'>";
                 </tr>";
             $no++;
           }
+          $bayar = "<div id='totalbayar'>";
+          
           $total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total, sum(b.berat*a.jumlah) as total_berat FROM `rb_penjualan_detail` a JOIN rb_produk b ON a.id_produk=b.id_produk where a.id_penjualan='".$this->session->idp."'")->row_array();
+          
+          if($x[code]==''){
+            $y="Tidak memilih voucher";
+            $diskvouc=$total[total];
+          }else{
+            if($x[berlaku]<=date('Y-m-d')){
+              $y="Kadaluarsa";
+              $diskvouc=$total[total];
+            }else{
+              if($total[total]>='100000'){
+                if($x[diskon]==0){
+                  $y=$x[nama_voucher];
+                  $z=$x[max];
+                  $diskvouc=$total[total]-$z;
+                }else{
+                  $y=$x[nama_voucher];
+                  $z=($x[diskon]/100) * $total[total];
+                  if($z>='10000'){
+                    $a='10000';
+                    $diskvouc = $total[total]-$a;
+                  }else{
+                    $diskvouc = $total[total]-$z;
+                  } 
+                }
+              }else{
+                $diskvouc=$total[total];
+              }
+              #echo $diskvouc;
+            }
+          }
+
           echo "<tr class='success'>
                   <td colspan='3'><b>Total Berat</b></td>
                   <td><b>$total[total_berat] Gram</b></td>
                   <td></td>
                 </tr>
-
+                <tr class='success'>
+                  <td colspan='3'><b>Voucher</b></td>
+                  <td><b>$y</b></td>
+                  <td></td>
+                </tr>
         </tbody>
       </table>
-
       <div class='col-md-4 pull-right'>
-        <center>Total Bayar <br><h2 id='totalbayar'></h2>   
-        <button type='submit' name='submit' id='oksimpan' class='btn btn-success btn-flat btn-sm' style='display: none'>Lakukan Pembayaran</button>
+        <center>Total Bayar <br><h2><s>$total[total]</s></h2><div id='totalbayar'></h2>
+        
         </center>
     </div>";
 
       $ket = $this->db->query("SELECT * FROM rb_keterangan where id_reseller='".$rows['id_reseller']."'")->row_array();
       $diskon_total = '0';
+
 ?>
 
-<input type="hidden" name="total" id="total" value="<?php echo $total['total']; ?>"/>
+<input type="hidden" name="total" id="total" value="<?php echo $diskvouc; ?>"/>
 <input type="hidden" name="ongkir" id="ongkir" value="0"/>
 <input type="hidden" name="berat" value="<?php echo $total['total_berat']; ?>"/>
 <input type="hidden" name="diskonnilai" id="diskonnilai" value="<?php echo $diskon_total; ?>"/>
@@ -83,6 +132,10 @@ echo "<form action='".base_url()."members/selesai_belanja' method='POST'>";
     </div>
 </div>
 
+<button type='submit' name='submit' id='oksimpan' class='btn btn-success btn-flat btn-sm' style='display: none'>Lakukan Pembayaran</button>
+<?php
+  #$this->db->query("UPDATE `voucher_user` SET `use`='Y' WHERE id_konsumen='".$this->session->id_konsumen."' AND id_voucher=$x[id_voucher]");
+?>
 
 <?php
 echo form_close();

@@ -45,6 +45,14 @@
                                                                               }
                                                                             }
                     echo "</select></td></tr>
+
+                    <tr><th width='130px' scope='row'>Sistem Penjualan</th>  <td><select name='aaa' class='form-control' required>
+                                                                                 <option value='$rows[tipe]' selected>$rows[tipe]</option>
+                                                                                 <option value='Ecer'>Ecer</option>
+                                                                                 <option value='Grosir'>Grosir</option>
+                                                                                 <option value='Pre-Order'>Pre-Order</option>
+                                                                                 <option value='Ekspor'>Ekspor</option></td></tr>
+                    
                     <tr><th scope='row'>Sub Kategori</th>                   <td><select name='aa' class='form-control' id='sub_kategori_produk'>
                                                                                 <option value='' selected>- Pilih Sub Kategori Produk -</option>";
                                                                                 $sub_kategori_produk = $this->db->query("SELECT * FROM rb_kategori_produk_sub");

@@ -51,19 +51,19 @@
         echo "<div class='col-md-2 col-xs-6 '>
                   <center>
                     <div style='height:140px; overflow:hidden'>
-                      <a title='$row[nama_produk]' href='".base_url()."produk/detail/$row[produk_seo]'><img style='min-height:140px; width:99%' src='".base_url()."asset/foto_produk/$foto_produk'></a>
+                      <a title='$row[nama_produk]' href='".base_url()."produk/detail/$row[id_produk]/$row[produk_seo]'><img style='min-height:140px; width:99%' src='".base_url()."asset/foto_produk/$foto_produk'></a>
                       $diskon_persen
                     </div>
-                    <h4 class='produk-title produk-title-list'><a title='$row[nama_produk]' href='".base_url()."produk/detail/$row[produk_seo]'>$judul</a></h4>
+                    <h4 class='produk-title produk-title-list'><a title='$row[nama_produk]' href='".base_url()."produk/detail/$row[id_produk]/$row[produk_seo]'>$judul</a></h4>
                     <span style='color:red;'>$harga</span><br>
                     <i>$stok</i><br>";
                     if ($beli['beli']-$jual['jual']<=0){
                       echo "<a class='btn btn-default btn-block btn-sm' href='#'>Beli Sekarang</a>";
                     }else{
                       if($this->session->level=='konsumen'){
-                        echo "<a class='btn btn-default btn-block btn-sm' href='".base_url()."produk/detail/$row[produk_seo]'>Beli Sekarang</a>";
+                        echo "<a class='btn btn-default btn-block btn-sm' href='".base_url()."produk/detail/$row[id_produk]/$row[produk_seo]'>Beli Sekarang</a>";
                       }else{
-                        echo "<a class='btn btn-default btn-block btn-sm' href='".base_url()."produk/detail/$row[produk_seo]'>Beli Sekarang</a>";
+                        echo "<a class='btn btn-default btn-block btn-sm' href='".base_url()."produk/detail/$row[id_produk]/$row[produk_seo]'>Beli Sekarang</a>";
                       }
                     }
                     echo "</center>

@@ -48,6 +48,9 @@
                                   <th>Nama Reseller</th>
                                   <th>Total Belanja</th>
                                   <th>Status</th>
+                                  <th>Voucher</th>
+                                  <th>Total Asli + Ongkir</th>
+                                  <th>Total - Voucher</th>
                                   <th>Waktu Transaksi</th>
                                 </tr>
                               </thead>
@@ -56,12 +59,29 @@
                                   $no = 1;
                                   foreach ($record->result_array() as $row){
                                   if ($row['proses']=='0'){ $proses = '<i class="text-danger">Pending</i>'; }elseif($row['proses']=='1'){ $proses = '<i class="text-success">Proses</i>'; }else{ $proses = '<i class="text-info">Konfirmasi</i>'; }
-                                  $total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+                                  #$total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+                                  $qwer = $this->db->query("SELECT diskvoucher as total FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+                                  if($qwer[total]=='0'){
+                                    $total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total, a.id_penjualan FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+                                    $statvoucher = 'Tidak';
+                                    $jumlah_asli = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total, a.id_penjualan FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+              
+                                  }else{
+                                    $total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as zz, a.diskvoucher-a.diskon as total, a.id_penjualan FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+                                    $jumlahvoucher = $total[zz]-$qwer[total];
+                                    $statvoucher = 'Ya - '.rupiah($jumlahvoucher);
+                                    $jumlah_asli = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total, a.id_penjualan FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+
+                                  }
                                   echo "<tr><td>$no</td>
                                             <td>$row[kode_transaksi]</td>
                                             <td>$row[nama_reseller]</td>
                                             <td style='color:red;'>Rp ".rupiah($total['total'])."</td>
                                             <td>$proses</td>
+                                            <td>$statvoucher</td>
+                              <td>Rp ".rupiah($jumlah_asli['total']+$row['ongkir'])."</td>
+                              <td style='color:red;'>Rp ".rupiah($total['total']+$row['ongkir'])."</td>
+                              
                                             <td>$row[waktu_transaksi]</td>
                                          </tr>";
                                     $no++;

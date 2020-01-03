@@ -78,7 +78,8 @@ echo "<div class='col-md-12'>
                 <a target='_BLANK' style='border-radius:15px 0px 0px 15px' class='btn btn-danger btn-sm pull-right' href='https://api.whatsapp.com/send?phone=$rows[no_telpon]&amp;text=$record[nama_produk],... Apakah%20produk%20Ini%20bisa%20Nego?...'>Coba Nego Pelapak</a>
                 </td></tr>
                 <tr><td style='font-weight:bold; width:90px'>Berat</td> <td>$record[berat] Gram</td></tr>
-                <tr><td style='font-weight:bold'>Kategori</td> <td><a href='".base_url()."produk/kategori/$kat[kategori_seo]'>$kat[nama_kategori]</a></td></tr>";
+                <tr><td style='font-weight:bold'>Kategori</td> <td><a href='".base_url()."produk/kategori/$kat[kategori_seo]'>$kat[nama_kategori]</a></td></tr>
+                <tr><td style='font-weight:bold; width:90px'>Jenis</td> <td>$record[tipe]</td></tr>";
                 if (($beli['beli']-$jual['jual'])>=1){
                     echo "<tr><td style='font-weight:bold'>Tersedia</td> <td class='text-success'>".($beli['beli']-$jual['jual'])." stok barang</td></tr>";
                 }else{

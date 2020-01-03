@@ -25,12 +25,13 @@ class Produk extends CI_Controller {
 		if (is_numeric($dari)) {
 			if ($this->input->post('kata')){
 				$data['title'] = "Hasil Pencarian - ''".cetak($this->input->post('kata'))."''";
+				$data['a'] = $data['title'];
 				$data['description'] = description();
 				$data['keywords'] = keywords();
 				$data['record'] = $this->db->query("SELECT a.*, b.nama_reseller, c.nama_kota FROM rb_produk a LEFT JOIN rb_reseller b ON a.id_reseller=b.id_reseller LEFT JOIN rb_kota c ON b.kota_id=c.kota_id where a.id_reseller!='0' AND a.id_produk_perusahaan='0' AND a.nama_produk LIKE '%".cetak($this->input->post('kata'))."%' ORDER BY a.id_produk DESC LIMIT $dari,$config[per_page]");
 			}else{
 				$data['title'] = title();
-				$data['judul'] = 'Semua Produk Kami';
+				$data['a'] = 'Semua Produk Kami';
 				$data['description'] = description();
 				$data['keywords'] = keywords();
 				$this->pagination->initialize($config);
@@ -98,7 +99,6 @@ class Produk extends CI_Controller {
 			redirect('main');
 		}
 	}
-
 
 	function reseller(){
 		$jumlah= $this->model_app->view('rb_reseller')->num_rows();
@@ -300,7 +300,7 @@ class Produk extends CI_Controller {
 						$dataa = array('id_penjualan'=>$idp,
 					        		   'id_produk'=>$row['id_produk'],
 					        		   'jumlah'=>$row['jumlah'],
-					        		   'harga_jual'=>$row['harga_jual'],
+									   'harga_jual'=>$row['harga_jual'],
 					        		   'satuan'=>$row['satuan']);
 						$this->model_app->insert('rb_penjualan_detail',$dataa);
 					}
@@ -453,7 +453,7 @@ class Produk extends CI_Controller {
 
 	public function detail(){
 		$ids = $this->uri->segment(3);
-		$dat = $this->db->query("SELECT * FROM rb_produk where produk_seo='$ids' AND id_reseller!='0'");
+		$dat = $this->db->query("SELECT * FROM rb_produk where id_produk='$ids' AND id_reseller!='0'");
 	    $row = $dat->row();
 	    $total = $dat->num_rows();
 	        if ($total == 0){

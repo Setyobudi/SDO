@@ -49,6 +49,16 @@
                 </ul>
             </li>
 
+
+            <li class="treeview">
+                <a href="#"><i class="fa fa-flag"></i> <span>Iklan</span> <i class="fa fa-angle-left pull-right"></i></a>
+                <ul class="treeview-menu">
+                    <?php 
+                        echo "<li><a href='".base_url().$this->uri->segment(1)."/pasangiklan'><i class='fa fa-circle-o'></i> Request Iklan</a></li>";
+                    ?>
+                </ul>
+            </li>
+
             <li><a href="<?php echo base_url(); ?>reseller/edit_reseller/<?php echo $this->session->id_reseller; ?>"><i class="fa fa-user"></i> <span>Edit Profile</span></a></li>
             <li><a href="<?php echo base_url(); ?>reseller/logout"><i class="fa fa-power-off"></i> <span>Logout</span></a></li>
           </ul>

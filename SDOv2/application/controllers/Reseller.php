@@ -221,6 +221,41 @@ class Reseller extends CI_Controller {
 		}
 	}
 
+	function pasangiklan(){
+		cek_session_reseller();
+		if (isset($_POST['submit'])){
+			
+		}else{
+			$data['record'] = $this->model_app->view_where_ordering('req_iklan',array('id_reseller'=>$this->session->id_reseller),'id_iklan','ASC');
+			#$data['rowsaldo'] = $this->model_app->view_where_ordering('rb_saldo_iklan',array('id_reseller'=>$this->session->id_reseller),'id_saldo','ASC');
+			$this->template->load($this->uri->segment(1).'/template',$this->uri->segment(1).'/mod_iklan/view_pasang_iklan',$data);
+		}
+	}
+
+	function tambah_iklan(){
+		cek_session_reseller();
+		if (isset($_POST['submit'])){
+			$data = array('id_reseller'=>$this->session->id_reseller,
+			              'tempat'=>$this->input->post('a'),
+			              'posisi'=>$this->input->post('b'),
+						  'durasi'=>$this->input->post('c'),
+						  'harga'=>$this->input->post('d'),
+						  'status'=>'N',
+						  'tanggal_req'=>date('Y-m-d H:i:s'));
+						$this->model_app->insert('req_iklan',$data);
+			redirect($this->uri->segment(1).'/pasangiklan');
+		}else{
+			$this->template->load($this->uri->segment(1).'/template',$this->uri->segment(1).'/mod_iklan/view_iklan_tambah');
+		}
+	}
+
+	function hapus_iklan(){
+		cek_session_reseller();
+		$id = array('id_iklan' => $this->uri->segment(3));
+		$this->model_app->delete('req_iklan',$id);
+		redirect($this->uri->segment(1).'/pasangiklan');
+	}
+
 	function tambah_produk(){
         cek_session_reseller();
         if (isset($_POST['submit'])){
@@ -254,7 +289,8 @@ class Reseller extends CI_Controller {
                               'gambar'=>$fileName,
                               'keterangan'=>$this->input->post('ff'),
                               'username'=>$this->session->username,
-                              'waktu_input'=>date('Y-m-d H:i:s'));
+							  'waktu_input'=>date('Y-m-d H:i:s'),
+							  'tipe'=>$this->input->post('aaa'));
             }else{
                 $data = array('id_kategori_produk'=>$this->input->post('a'),
                 			  'id_kategori_produk_sub'=>$this->input->post('aa'),
@@ -268,7 +304,8 @@ class Reseller extends CI_Controller {
                               'berat'=>$this->input->post('berat'),
                               'keterangan'=>$this->input->post('ff'),
                               'username'=>$this->session->username,
-                              'waktu_input'=>date('Y-m-d H:i:s'));
+							  'waktu_input'=>date('Y-m-d H:i:s'),
+							  'tipe'=>$this->input->post('aaa'));
             }
             $this->model_app->insert('rb_produk',$data);
             $id_produk = $this->db->insert_id();
@@ -347,7 +384,8 @@ class Reseller extends CI_Controller {
                               'berat'=>$this->input->post('berat'),
                               'gambar'=>$fileName,
                               'keterangan'=>$this->input->post('ff'),
-                              'username'=>$this->session->username);
+							  'username'=>$this->session->username,
+							  'tipe'=>$this->input->post('aaa'));
             }else{
                 $data = array('id_kategori_produk'=>$this->input->post('a'),
                 			  'id_kategori_produk_sub'=>$this->input->post('aa'),
@@ -359,7 +397,8 @@ class Reseller extends CI_Controller {
                               'harga_konsumen'=>$this->input->post('f'),
                               'berat'=>$this->input->post('berat'),
                               'keterangan'=>$this->input->post('ff'),
-                              'username'=>$this->session->username);
+							  'username'=>$this->session->username,
+							  'tipe'=>$this->input->post('aaa'));
             }
 
             $where = array('id_produk' => $this->input->post('id'),'id_reseller'=>$this->session->id_reseller);
@@ -610,6 +649,9 @@ class Reseller extends CI_Controller {
 			$this->template->load($this->uri->segment(1).'/template',$this->uri->segment(1).'/mod_keterangan/view_keterangan',$data);
 		}
 	}
+
+
+
 
 	function penjualan(){
 		cek_session_reseller();

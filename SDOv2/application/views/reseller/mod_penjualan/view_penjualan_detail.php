@@ -55,14 +55,31 @@
                           </tr>";
                       $no++;
                     }
-                    $total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total FROM `rb_penjualan_detail` a where a.id_penjualan='".$this->uri->segment(3)."'")->row_array();
+                    #$total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total FROM `rb_penjualan_detail` a where a.id_penjualan='".$this->uri->segment(3)."'")->row_array();
+                    $qwer = $this->db->query("SELECT diskvoucher as total FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+                    if($qwer[total]=='0'){
+                      $total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total, a.id_penjualan FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+                      $jumlahvoucher = '0';
+                      $statvoucher = 'Tidak';
+                      $jumlah_asli = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total, a.id_penjualan FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+              
+                    }else{
+                      $total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as zz, a.diskvoucher-a.diskon as total, a.id_penjualan FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+                      $jumlahvoucher = $total[zz]-$qwer[total];
+                      $statvoucher = 'Ya - '.$jumlahvoucher;
+                      $jumlah_asli = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total, a.id_penjualan FROM `rb_penjualan_detail` a where a.id_penjualan='$row[id_penjualan]'")->row_array();
+                    }
                     echo "<tr class='warning'>
                             <td colspan='5'><b>Ongkir</b></td>
                             <td><b>Rp ".rupiah($detail['ongkir'])."</b></td>
                           </tr>
                           <tr class='warning'>
                             <td colspan='5'><b>Belanja</b></td>
-                            <td><b>Rp ".rupiah($total['total'])."</b></td>
+                            <td><b>Rp ".rupiah($jumlah_asli['total'])."</b></td>
+                          </tr>
+                          <tr class='warning'>
+                            <td colspan='5'><b>Voucher</b></td>
+                            <td><b>Rp ".rupiah($jumlahvoucher)."</b></td>
                           </tr>
                           <tr class='success'>
                             <td colspan='5'><b>Total</b></td>

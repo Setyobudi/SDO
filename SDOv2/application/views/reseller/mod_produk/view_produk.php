@@ -10,6 +10,7 @@
                       <tr>
                         <th style='width:30px'>No</th>
                         <th>Nama Produk</th>
+                        <th>Tipe</th>
                         <th>Harga Modal</th>
                         <th>Harga Jual</th>
                         <th>Stok</th>
@@ -31,6 +32,7 @@
                       if ($row['id_produk_perusahaan']=='0'){ $modal = $row['harga_beli'];  }else{ $modal = $row['harga_reseller']; }
                     echo "<tr><td>$no</td>
                               <td>$row[nama_produk] $perusahaan</td>
+                              <td>$row[tipe]</td>
                               <td>Rp ".rupiah($modal)."</td>
                               <td>Rp <span style='text-decoration:$line'>".rupiah($row['harga_konsumen'])."</span> $harga</td>
                               <td>".($beli['beli']-$jual['jual'])."</td>

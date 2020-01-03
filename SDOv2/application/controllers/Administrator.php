@@ -2144,6 +2144,84 @@ class Administrator extends CI_Controller {
 		redirect($this->uri->segment(1).'/pesanmasuk');
 	}
 
+    //controller voucher
+    function voucher(){
+		cek_session_akses('voucher',$this->session->id_session);
+		$data['record'] = $this->model_app->view_ordering('rb_voucher','id_voucher','ASC');
+		$this->template->load('administrator/template','administrator/mod_voucher/view_voucher',$data);
+    }
+    
+    function tambah_voucher(){
+        cek_session_akses('voucher',$this->session->id_session);
+        if (isset($_POST['submit'])){
+            $config['upload_path'] = 'asset/images/voucher/';
+            $config['allowed_types'] = 'gif|jpg|png|JPG|JPEG';
+            $config['max_size'] = '1000'; // kb
+            $this->load->library('upload', $config);
+            $this->upload->do_upload('h');
+            $hasil=$this->upload->data();
+            if ($hasil['file_name']==''){
+                    $data = array('nama_voucher'=>$this->db->escape_str($this->input->post('a')),
+                                'code'=>$this->db->escape_str($this->input->post('b')),
+                                'diskon'=>$this->db->escape_str($this->input->post('c')),
+                                'min_trx'=>$this->db->escape_str($this->input->post('e')),
+                                'max'=>$this->db->escape_str($this->input->post('f')),
+                                'date_now'=>date('Y-m-d'),
+                                'date_exp'=>$this->db->escape_str($this->input->post('g')),
+                                'jumlah'=>$this->db->escape_str($this->input->post('d')));
+            }else{
+                    $data = array('nama_voucher'=>$this->db->escape_str($this->input->post('a')),
+                            'code'=>$this->db->escape_str($this->input->post('b')),
+                            'diskon'=>$this->db->escape_str($this->input->post('c')),
+                            'min_trx'=>$this->db->escape_str($this->input->post('e')),
+                            'max'=>$this->db->escape_str($this->input->post('f')),
+                            'date_now'=>date('Y-m-d'),
+                            'date_exp'=>$this->db->escape_str($this->input->post('g')),
+                            'img'=>$hasil['file_name'],
+                            'jumlah'=>$this->db->escape_str($this->input->post('d')));
+            }
+            $this->model_app->insert('rb_voucher',$data);
+            redirect('administrator/voucher');
+        }else{
+            $this->template->load('administrator/template','administrator/mod_voucher/tambah_voucher');
+        }
+    }
+
+    function edit_voucher(){
+        cek_session_akses('voucher',$this->session->id_session);
+        $id = $this->uri->segment(3);
+        if (isset($_POST['submit'])){
+            $config['upload_path'] = 'asset/images/voucher/';
+            $config['allowed_types'] = 'gif|jpg|png|JPG|JPEG';
+            $config['max_size'] = '1000'; // kb
+            $this->load->library('upload', $config);
+            $this->upload->do_upload('h');
+            $hasil=$this->upload->data();
+            $data = array('nama_voucher'=>$this->db->escape_str($this->input->post('a')),
+                        'code'=>$this->db->escape_str($this->input->post('b')),
+                        'diskon'=>$this->db->escape_str($this->input->post('c')),
+                        'min_trx'=>$this->db->escape_str($this->input->post('e')),
+                        'max'=>$this->db->escape_str($this->input->post('f')),
+                        'date_exp'=>$this->db->escape_str($this->input->post('g')),
+                        'img'=>$hasil['file_name'],
+                        'jumlah'=>$this->db->escape_str($this->input->post('d')));
+            $where = array('id_voucher' => $this->input->post('id'));
+            $this->model_app->update('rb_voucher', $data, $where);
+            redirect('administrator/voucher');
+        }else{
+            $data['rows'] = $this->model_app->edit('rb_voucher',array('id_voucher'=>$id))->row_array();
+            $this->template->load('administrator/template','administrator/mod_voucher/edit_voucher',$data);
+        }
+    }
+
+    function delete_voucher(){
+        cek_session_akses('voucher',$this->session->id_session);
+        $id = array('id_voucher' => $this->uri->segment(3));
+        $this->model_app->delete('rb_voucher',$id);
+        redirect('administrator/voucher');
+    }
+
+
 
 	// Controller Modul User
 

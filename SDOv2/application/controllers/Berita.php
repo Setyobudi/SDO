@@ -15,7 +15,7 @@ class Berita extends CI_Controller {
 			$jumlah= $this->model_utama->view('berita')->num_rows();
 			$config['base_url'] = base_url().'berita/index/';
 			$config['total_rows'] = $jumlah;
-			$config['per_page'] = 15; 	
+			$config['per_page'] = 4; 	
 			if ($this->uri->segment('3')==''){
 				$dari = 0;
 			}else{
