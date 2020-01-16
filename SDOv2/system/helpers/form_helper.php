@@ -88,7 +88,7 @@ if ( ! function_exists('form_open'))
 			$attributes .= ' accept-charset="'.strtolower(config_item('charset')).'"';
 		}
 
-		$form = '<form id="search_mini_form" action="'.$action.'"'.$attributes.">\n";
+		$form = '<form class="form-inline quick-search-form" action="'.$action.'"'.$attributes.">\n";
 
 		if (is_array($hidden))
 		{
