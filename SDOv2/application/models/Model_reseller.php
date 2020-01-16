@@ -94,11 +94,11 @@ class Model_reseller extends CI_model{
     }
 
     function penjualan_konsumen_detail($id){
-        return $this->db->query("SELECT * FROM `rb_penjualan` a JOIN rb_reseller b ON a.id_penjual=b.id_reseller JOIN rb_kota c ON b.kota_id=c.kota_id where a.id_penjualan='$id'");
+        return $this->db->query("SELECT * FROM `rb_penjualan` a JOIN rb_reseller b ON a.id_penjual=b.id_reseller  where a.id_penjualan='$id'");
     }
 
     function profile_konsumen($id){
-        return $this->db->query("SELECT a.id_konsumen, a.username, a.nama_lengkap, a.email, a.jenis_kelamin, a.tanggal_lahir, a.tempat_lahir, a.alamat_lengkap, a.kecamatan, a.no_hp, a.tanggal_daftar, b.kota_id, b.nama_kota as kota, c.provinsi_id, c.nama_provinsi as propinsi FROM `rb_konsumen` a LEFT JOIN rb_kota b ON a.kota_id=b.kota_id LEFT JOIN rb_provinsi c ON b.provinsi_id=c.provinsi_id where a.id_konsumen='$id'");
+        return $this->db->query("SELECT * FROM `rb_konsumen`  where id_konsumen='$id'");
     }
 
     function orders_report($id,$level){

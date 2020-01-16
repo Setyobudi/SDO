@@ -20,13 +20,14 @@ class Auth extends CI_Controller {
 	public function register(){
 		if (isset($_POST['submit1'])){
 			$data = array('username'=>$this->input->post('a'),
-	        			  'password'=>hash("sha512", md5($this->input->post('b'))),
-	        			  'nama_lengkap'=>$this->input->post('c'),
-	        			  'email'=>$this->input->post('d'),
-	        			  'alamat_lengkap'=>$this->input->post('e'),
-	        			  'kota_id'=>$this->input->post('h'),
-	        			  'kecamatan'=>$this->input->post('i'),
-						  'no_hp'=>$this->input->post('j'),
+	        			  'password'=>hash("sha512", md5($this->input->post('d'))),
+	        			  'nama_lengkap'=>$this->input->post('b'),
+	        			  'email'=>$this->input->post('c'),
+						  'alamat_lengkap'=>$this->input->post('f'),
+						  'kab_id'=>$this->input->post('h'),
+	        			  'kota_id'=>$this->input->post('i'),
+						  'no_hp'=>$this->input->post('e'),
+						  'kodepos'=>$this->input->post('j'),
 						  'tanggal_daftar'=>date('Y-m-d H:i:s'));
 			$this->model_app->insert('rb_konsumen',$data);
 			$id = $this->db->insert_id();
@@ -97,6 +98,66 @@ class Auth extends CI_Controller {
 		}
 	}
 
+	public function aksilogin(){
+				$username = strip_tags($this->input->post('a'));
+				$password = hash("sha512", md5(strip_tags($this->input->post('b'))));
+				$cek = $this->db->query("SELECT * FROM rb_konsumen where username='".$this->db->escape_str($username)."' AND password='".$this->db->escape_str($password)."'");
+			    $row = $cek->row_array();
+			    $total = $cek->num_rows();
+				if ($total > 0){
+					$this->session->set_userdata(array('id_konsumen'=>$row['id_konsumen'], 'level'=>'konsumen'));
+					if ($this->session->idp!=''){
+						$data = array('kode_transaksi'=>$this->session->idp,
+			        			  'id_pembeli'=>$row['id_konsumen'],
+			        			  'id_penjual'=>$this->session->reseller,
+			        			  'status_pembeli'=>'konsumen',
+			        			  'status_penjual'=>'reseller',
+			        			  'waktu_transaksi'=>date('Y-m-d H:i:s'),
+			        			  'proses'=>'0');
+						$this->model_app->insert('rb_penjualan',$data);
+						$id = $this->db->insert_id();
+
+						$query_temp = $this->db->query("SELECT * FROM rb_penjualan_temp where session='".$this->session->idp."'");
+						foreach ($query_temp->result_array() as $r) {
+							$data = array('id_penjualan'=>$id,
+			        			  'id_produk'=>$r['id_produk'],
+			        			  'jumlah'=>$r['jumlah'],
+			        			  'diskon'=>$r['diskon'],
+			        			  'harga_jual'=>$r['harga_jual'],
+			        			  'satuan'=>$r['satuan']);
+							$this->model_app->insert('rb_penjualan_detail',$data);
+						}
+						$this->db->query("DELETE FROM rb_penjualan_temp where session='".$this->session->idp."'");
+
+						$this->session->unset_userdata('reseller');
+						$this->session->unset_userdata('idp');
+						$this->session->set_userdata(array('idp'=>$id));
+					}
+					echo "<script>Swal.fire({
+						icon: 'success',
+						title: 'Berhasil Login, tunggu sebentar...',
+						showConfirmButton: false,
+						timer: 3000
+					  }); $(document).ready(function () {
+						// Handler for .ready() called.
+						window.setTimeout(function () {
+							location.href = '".base_url()."main';
+						}, 3500);
+					});</script>";
+					//redirect('members/profile');
+				}else{
+					//$data['title'] = 'Gagal Login';
+					//echo $this->session->set_flashdata('message', '<div class="alert alert-danger"><center>Maaf, Username atau password salah!</center></div>');
+					//redirect('auth/login');
+					echo "<script>Swal.fire({
+						icon: 'error',
+						title: 'Maaf, Username atau password salah!',
+						showConfirmButton: false,
+						timer: 3000
+					  });</script>";
+				}
+	}
+
 	public function login(){
 		if (isset($_POST['login'])){
 				$username = strip_tags($this->input->post('a'));
@@ -133,7 +194,13 @@ class Auth extends CI_Controller {
 						$this->session->unset_userdata('idp');
 						$this->session->set_userdata(array('idp'=>$id));
 					}
-					redirect('members/profile');
+					echo "<script>Swal.fire({
+						icon: 'success',
+						title: 'Berhasil Login',
+						showConfirmButton: false,
+						timer: 1500
+					  })</script>";
+					//redirect('members/profile');
 				}else{
 					$data['title'] = 'Gagal Login';
 					echo $this->session->set_flashdata('message', '<div class="alert alert-danger"><center>Maaf, Username atau password salah!</center></div>');

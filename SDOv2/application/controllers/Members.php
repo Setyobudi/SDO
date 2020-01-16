@@ -24,7 +24,12 @@ class Members extends CI_Controller {
 	function profile(){
 		cek_session_members();
 		$data['title'] = 'Profile Anda';
-		$data['row'] = $this->model_reseller->profile_konsumen($this->session->id_konsumen)->row_array();
+		$asd = $this->db->query("SELECT * FROM rb_konsumen where id_konsumen='".$this->session->id_konsumen."'")->row_array();
+		$kab = $asd['kab_id'];
+		$kec = $asd['kota_id'];
+		$zz = file_get_contents("http://api.shipping.esoftplay.com/subdistrict/$kab/$kec");
+		$data['detail'] = json_decode($zz, true);
+		$data['row'] = $this->db->query("SELECT * FROM rb_konsumen where id_konsumen='".$this->session->id_konsumen."'")->row_array();
 		$this->template->load(template().'/template',template().'/reseller/view_profile',$data);
 	}
 
@@ -137,7 +142,7 @@ class Members extends CI_Controller {
 		if (is_numeric($dari)) {
 			$data['title'] = 'Data Produk Reseller';
 			$id = $this->uri->segment(3);
-			$data['rows'] = $this->db->query("SELECT * FROM rb_reseller a JOIN rb_kota b ON a.kota_id=b.kota_id where a.id_reseller='$id'")->row_array();
+			$data['rows'] = $this->db->query("SELECT * FROM rb_reseller where id_reseller='$id'")->row_array();
 			$data['record'] = $this->model_app->view_where_ordering_limit('rb_produk',array('id_reseller!='=>'0'),'id_produk','DESC',$dari,$config['per_page']);
 			$this->pagination->initialize($config);
 			$this->template->load(template().'/template',template().'/reseller/view_reseller_produk',$data);
@@ -159,8 +164,64 @@ class Members extends CI_Controller {
 			if ($stok <= '0'){
 				$produk = $this->model_app->edit('rb_produk',array('id_produk'=>$id_produk))->row_array();
 				$produk_cek = filter($produk['nama_produk']);
-				echo "<script>window.alert('Maaf, Stok untuk Produk $produk_cek pada Reseller ini telah habis!');
-                                  window.location=('".base_url()."members/reseller')</script>";
+				//echo "<script>window.alert('Maaf, Stok untuk Produk $produk_cek pada Reseller ini telah habis!');
+								  //window.location=('".base_url()."members/reseller')</script>";
+				echo "<script>Swal.fire({
+						icon: 'error',
+  						title: 'Oops...',
+  						text: 'Maaf, Stok untuk Produk $produk_cek pada Reseller ini telah habis!',
+				})</script>";
+				$record = $this->model_app->view_join_where('rb_penjualan_detail','rb_produk','id_produk',array('id_penjualan'=>$this->session->idp),'id_penjualan_detail','ASC');  
+				$total = $this->db->query("SELECT COUNT(*) as cart, sum((a.harga_jual*a.jumlah)-a.diskon) as total, sum(b.berat*a.jumlah) as total_berat FROM `rb_penjualan_detail` a JOIN rb_produk b ON a.id_produk=b.id_produk where a.id_penjualan='".$this->session->idp."'")->row_array();
+				echo "<div class='dropdown-cart-menu-container pull-right'>
+                <div class='btn-group dropdown-cart'>
+                <button type='button' class='btn btn-custom dropdown-toggle' data-toggle='dropdown'>
+                <span class='cart-menu-icon'></span>".
+				$total['cart']." item(s) <span class='drop-price'> - Rp. ".rupiah($total['total'])."</span>
+				<input type='hidden' id='totbelanja' value='".$total['cart']."' \>
+                </button>
+                                    
+                <div class='dropdown-menu dropdown-cart-menu pull-right clearfix' role='menu'>
+                <p class='dropdown-cart-description'>Terakhir Item Ditambahkan</p>
+                <ul class='dropdown-cart-product-list'>";
+
+				$no = 1;
+          		foreach ($record as $row){
+          		$sub_total = ($row['harga_jual']*$row['jumlah'])-$row['diskon'];
+          		$ex = explode(';', $row['gambar']);
+          		if (trim($ex[0])==''){ $foto_produk = 'no-image.png'; }else{ $foto_produk = $ex[0]; }
+					echo "<li class='item clearfix'>
+						<input type='hidden' id='idpen$no' value='".$row[id_penjualan_detail]."' \>
+						<a id='hapuscart$no' href='#' title='Hapus item' class='delete-item'><i class='fa fa-times'></i></a>
+							<figure>
+								<img src='".base_url()."asset/foto_produk/$foto_produk'>
+							</figure>
+							<div class='dropdown-cart-details'>
+								<p class='item-name'>
+									<a href='".base_url()."produk/detail/$row[id_produk]/$row[produk_seo]'>$row[nama_produk] ($row[jumlah])</a>
+								</p>
+								<p>
+									
+									<span class='item-price'>Rp. ".rupiah($sub_total)."</span>
+								</p>
+							</div>
+						</li>";
+					$no++;
+				}
+				$total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total, sum(b.berat*a.jumlah) as total_berat FROM `rb_penjualan_temp` a JOIN rb_produk b ON a.id_produk=b.id_produk where a.session='".$this->session->idp."'")->row_array();
+				echo "</ul>                      
+					<ul class='dropdown-cart-total'>
+						<li><span class='dropdown-cart-total-title'>Ongkir:</span>0</li>";
+						$total= $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total FROM `rb_penjualan_detail` a JOIN rb_produk b ON a.id_produk=b.id_produk where a.id_penjualan='".$this->session->idp."'")->row_array();
+						echo "<li><span class='dropdown-cart-total-title'>Total:</span>Rp. ".rupiah($total['total'])."</li>
+					</ul>
+					<div class='dropdown-cart-action'>
+						<p><a href='".base_url()."members/keranjang' class='btn btn-custom-2 btn-block'>Keranjang</a></p>
+						<p><a href='".base_url()."members/checkouts' class='btn btn-custom btn-block'>Checkout</a></p>
+					</div>
+				</div>
+				</div>
+				</div>";				  
 			}else{
 				$this->session->unset_userdata('produk');
 				if ($this->session->idp == ''){
@@ -194,7 +255,65 @@ class Members extends CI_Controller {
 					        		  'satuan'=>$harga['satuan']);
 						$this->model_app->insert('rb_penjualan_detail',$data);
 					}
-					redirect('members/keranjang');
+					//redirect('members/keranjang');
+					echo "<script>Swal.fire({
+						icon: 'success',
+						title: 'Produk Ditambahkan',
+  						showConfirmButton: false,
+  						timer: 1500	
+					})</script>";
+					$record = $this->model_app->view_join_where('rb_penjualan_detail','rb_produk','id_produk',array('id_penjualan'=>$this->session->idp),'id_penjualan_detail','ASC');  
+					$total = $this->db->query("SELECT COUNT(*) as cart, sum((a.harga_jual*a.jumlah)-a.diskon) as total, sum(b.berat*a.jumlah) as total_berat FROM `rb_penjualan_detail` a JOIN rb_produk b ON a.id_produk=b.id_produk where a.id_penjualan='".$this->session->idp."'")->row_array();
+					echo "<div class='dropdown-cart-menu-container pull-right'>
+                    <div class='btn-group dropdown-cart'>
+                    <button type='button' class='btn btn-custom dropdown-toggle' data-toggle='dropdown'>
+                    <span class='cart-menu-icon'></span>".
+					$total['cart']." item(s) <span class='drop-price'> - Rp. ".rupiah($total['total'])."</span>
+					<input type='hidden' id='totbelanja' value='".$total['cart']."' \>
+                    </button>
+                                    
+                    <div class='dropdown-menu dropdown-cart-menu pull-right clearfix' role='menu'>
+                    <p class='dropdown-cart-description'>Terakhir Item Ditambahkan</p>
+                    <ul class='dropdown-cart-product-list'>";
+
+					$no = 1;
+          			foreach ($record as $row){
+          			$sub_total = ($row['harga_jual']*$row['jumlah'])-$row['diskon'];
+          			$ex = explode(';', $row['gambar']);
+          			if (trim($ex[0])==''){ $foto_produk = 'no-image.png'; }else{ $foto_produk = $ex[0]; }
+						echo "<li class='item clearfix'>
+							<input type='hidden' id='idpen$no' value='".$row[id_penjualan_detail]."' \>
+							<a id='hapuscart$no' href='#' title='Hapus item' class='delete-item'><i class='fa fa-times'></i></a>
+								<figure>
+									<img src='".base_url()."asset/foto_produk/$foto_produk'>
+								</figure>
+								<div class='dropdown-cart-details'>
+									<p class='item-name'>
+										<a href='".base_url()."produk/detail/$row[id_produk]/$row[produk_seo]'>$row[nama_produk] ($row[jumlah])</a>
+									</p>
+									<p>
+										
+										<span class='item-price'>Rp. ".rupiah($sub_total)."</span>
+									</p>
+								</div>
+							</li>";
+						$no++;
+					}
+					$total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total, sum(b.berat*a.jumlah) as total_berat FROM `rb_penjualan_temp` a JOIN rb_produk b ON a.id_produk=b.id_produk where a.session='".$this->session->idp."'")->row_array();
+					echo "</ul>                      
+						<ul class='dropdown-cart-total'>
+							<li><span class='dropdown-cart-total-title'>Ongkir:</span>0</li>";
+							$total= $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total FROM `rb_penjualan_detail` a JOIN rb_produk b ON a.id_produk=b.id_produk where a.id_penjualan='".$this->session->idp."'")->row_array();
+							echo "<li><span class='dropdown-cart-total-title'>Total:</span>Rp. ".rupiah($total['total'])."</li>
+						</ul>
+						<div class='dropdown-cart-action'>
+							<p><a href='".base_url()."members/keranjang' class='btn btn-custom-2 btn-block'>Keranjang</a></p>
+							<p><a href='".base_url()."members/checkouts' class='btn btn-custom btn-block'>Checkout</a></p>
+						</div>
+					</div>
+				</div>
+				</div>";		
+		  		//batas
 				}else{
 					if ($this->session->idp != ''){
 						$data['rows'] = $this->model_reseller->penjualan_konsumen_detail($this->session->idp)->row_array();
@@ -202,13 +321,72 @@ class Members extends CI_Controller {
 					}
 					$data['title'] = 'Keranjang Belanja';
 					$data['error_reseller'] = "<div class='alert alert-danger'>Maaf, Dalam 1 Transaksi hanya boleh order dari 1 Reseller saja.</div>";
-					$this->template->load(template().'/template',template().'/reseller/members/view_keranjang',$data);
+					//echo "<script>window.alert('Maaf, Dalam 1 Transaksi hanya boleh order dari 1 Reseller saja.');</script>";
+					echo "<script>Swal.fire({
+						icon: 'error',
+  						title: 'Oops...',
+  						text: 'Maaf, Dalam 1 Transaksi hanya boleh order dari 1 Reseller saja.',
+					})</script>";
+					$record = $this->model_app->view_join_where('rb_penjualan_detail','rb_produk','id_produk',array('id_penjualan'=>$this->session->idp),'id_penjualan_detail','ASC');  
+					$total = $this->db->query("SELECT COUNT(*) as cart, sum((a.harga_jual*a.jumlah)-a.diskon) as total, sum(b.berat*a.jumlah) as total_berat FROM `rb_penjualan_detail` a JOIN rb_produk b ON a.id_produk=b.id_produk where a.id_penjualan='".$this->session->idp."'")->row_array();
+					echo "<div class='dropdown-cart-menu-container pull-right'>
+                    <div class='btn-group dropdown-cart'>
+                    <button type='button' class='btn btn-custom dropdown-toggle' data-toggle='dropdown'>
+                    <span class='cart-menu-icon'></span>".
+					$total['cart']." item(s) <span class='drop-price'> - Rp. ".rupiah($total['total'])."</span>
+					<input type='hidden' id='totbelanja' value='".$total['cart']."' \>
+                    </button>
+                                    
+                	<div class='dropdown-menu dropdown-cart-menu pull-right clearfix' role='menu'>
+                    <p class='dropdown-cart-description'>Terakhir Item Ditambahkan</p>
+                    <ul class='dropdown-cart-product-list'>";
+
+					$no = 1;
+          			foreach ($record as $row){
+          			$sub_total = ($row['harga_jual']*$row['jumlah'])-$row['diskon'];
+          			$ex = explode(';', $row['gambar']);
+          			if (trim($ex[0])==''){ $foto_produk = 'no-image.png'; }else{ $foto_produk = $ex[0]; }
+						echo "<li class='item clearfix'>
+							<input type='hidden' id='idpen$no' value='".$row[id_penjualan_detail]."' \>
+							<a id='hapuscart$no' href='#' title='Hapus item' class='delete-item'><i class='fa fa-times'></i></a>
+								<figure>
+									<img src='".base_url()."asset/foto_produk/$foto_produk'>
+								</figure>
+								<div class='dropdown-cart-details'>
+									<p class='item-name'>
+										<a href='".base_url()."produk/detail/$row[id_produk]/$row[produk_seo]'>$row[nama_produk] ($row[jumlah])</a>
+									</p>
+									<p>
+										
+										<span class='item-price'>Rp. ".rupiah($sub_total)."</span>
+									</p>
+								</div>
+							</li>";
+						$no++;
+					}
+					$total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total, sum(b.berat*a.jumlah) as total_berat FROM `rb_penjualan_temp` a JOIN rb_produk b ON a.id_produk=b.id_produk where a.session='".$this->session->idp."'")->row_array();
+					echo "</ul>                      
+						<ul class='dropdown-cart-total'>
+							<li><span class='dropdown-cart-total-title'>Ongkir:</span>0</li>";
+							$total= $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total FROM `rb_penjualan_detail` a JOIN rb_produk b ON a.id_produk=b.id_produk where a.id_penjualan='".$this->session->idp."'")->row_array();
+							echo "<li><span class='dropdown-cart-total-title'>Total:</span>Rp. ".rupiah($total['total'])."</li>
+						</ul>
+						<div class='dropdown-cart-action'>
+							<p><a href='".base_url()."members/keranjang' class='btn btn-custom-2 btn-block'>Keranjang</a></p>
+							<p><a href='".base_url()."members/checkouts' class='btn btn-custom btn-block'>Checkout</a></p>
+						</div>
+					</div>
+				</div>
+				</div>";	
+					//$this->template->load(template().'/template',template().'/reseller/members/view_keranjang',$data);
+
 				}
 			}
 		}else{
 			if ($this->session->idp != ''){
 				$data['rows'] = $this->model_reseller->penjualan_konsumen_detail($this->session->idp)->row_array();
 				$data['rowsk'] = $this->model_reseller->view_join_where_one('rb_konsumen','rb_kota','kota_id',array('id_konsumen'=>$this->session->id_konsumen))->row_array();
+				$data['cust'] = $this->db->query("SELECT * FROM rb_konsumen where id_konsumen='".$this->session->id_konsumen."'")->row_array();
 				$data['record'] = $this->model_app->view_join_where('rb_penjualan_detail','rb_produk','id_produk',array('id_penjualan'=>$this->session->idp),'id_penjualan_detail','ASC');
 			}
 				$data['title'] = 'Keranjang Belanja';
@@ -234,7 +412,65 @@ class Members extends CI_Controller {
 			$this->model_app->delete('rb_penjualan',$idp);
 			$this->session->unset_userdata('idp');
 		}
-		redirect('members/keranjang');
+		//redirect('members/keranjang');
+		echo "<script>Swal.fire({
+			icon: 'success',
+			  title: 'Yay...',
+			  text: 'Item Berhasil Dihapus',
+			  showConfirmButton: false,
+  			  timer: 1500	
+		})</script>";
+		$record = $this->model_app->view_join_where('rb_penjualan_detail','rb_produk','id_produk',array('id_penjualan'=>$this->session->idp),'id_penjualan_detail','ASC');  
+		$total = $this->db->query("SELECT COUNT(*) as cart, sum((a.harga_jual*a.jumlah)-a.diskon) as total, sum(b.berat*a.jumlah) as total_berat FROM `rb_penjualan_detail` a JOIN rb_produk b ON a.id_produk=b.id_produk where a.id_penjualan='".$this->session->idp."'")->row_array();
+		echo "<div class='dropdown-cart-menu-container pull-right'>
+		<div class='btn-group dropdown-cart'>
+		<button type='button' class='btn btn-custom dropdown-toggle' data-toggle='dropdown'>
+		<span class='cart-menu-icon'></span>".
+		$total['cart']." item(s) <span class='drop-price'> - Rp. ".rupiah($total['total'])."</span>
+		<input type='hidden' id='totbelanja' value='".$total['cart']."' \>
+		</button>
+						
+		<div class='dropdown-menu dropdown-cart-menu pull-right clearfix' role='menu'>
+		<p class='dropdown-cart-description'>Terakhir Item Ditambahkan</p>
+		<ul class='dropdown-cart-product-list'>";
+
+		$no = 1;
+		  foreach ($record as $row){
+		  $sub_total = ($row['harga_jual']*$row['jumlah'])-$row['diskon'];
+		  $ex = explode(';', $row['gambar']);
+		  if (trim($ex[0])==''){ $foto_produk = 'no-image.png'; }else{ $foto_produk = $ex[0]; }
+			echo "<li class='item clearfix'>
+				<input type='hidden' id='idpen$no' value='".$row[id_penjualan_detail]."' \>
+				<a id='hapuscart$no' href='#' title='Hapus item' class='delete-item'><i class='fa fa-times'></i></a>
+					<figure>
+						<img src='".base_url()."asset/foto_produk/$foto_produk'>
+					</figure>
+					<div class='dropdown-cart-details'>
+						<p class='item-name'>
+							<a href='".base_url()."produk/detail/$row[id_produk]/$row[produk_seo]'>$row[nama_produk] ($row[jumlah])</a>
+						</p>
+						<p>
+							
+							<span class='item-price'>Rp. ".rupiah($sub_total)."</span>
+						</p>
+					</div>
+				</li>";
+			$no++;
+		}
+		$total = $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total, sum(b.berat*a.jumlah) as total_berat FROM `rb_penjualan_temp` a JOIN rb_produk b ON a.id_produk=b.id_produk where a.session='".$this->session->idp."'")->row_array();
+		echo "</ul>                      
+			<ul class='dropdown-cart-total'>
+				<li><span class='dropdown-cart-total-title'>Ongkir:</span>0</li>";
+				$total= $this->db->query("SELECT sum((a.harga_jual*a.jumlah)-a.diskon) as total FROM `rb_penjualan_detail` a JOIN rb_produk b ON a.id_produk=b.id_produk where a.id_penjualan='".$this->session->idp."'")->row_array();
+				echo "<li><span class='dropdown-cart-total-title'>Total:</span>Rp. ".rupiah($total['total'])."</li>
+			</ul>
+			<div class='dropdown-cart-action'>
+				<p><a href='".base_url()."members/keranjang' class='btn btn-custom-2 btn-block'>Keranjang</a></p>
+				<p><a href='".base_url()."members/checkouts' class='btn btn-custom btn-block'>Checkout</a></p>
+			</div>
+		</div>
+	</div>
+	</div>";
 	}
 
 	function selesai_belanja(){
@@ -418,7 +654,18 @@ class Members extends CI_Controller {
 	function logout(){
 		cek_session_members();
 		$this->session->sess_destroy();
-		redirect('main');
+		echo "<script>Swal.fire({
+			icon: 'success',
+			title: 'Berhasil Keluar, tunggu sebentar...',
+			showConfirmButton: false,
+			timer: 3000
+		  }); $(document).ready(function () {
+			// Handler for .ready() called.
+			window.setTimeout(function () {
+				location.href = '".base_url()."main';
+			}, 3500);
+		});</script>";
+		//redirect('main');
 	}
 
 	function tgl_indo($tanggal){

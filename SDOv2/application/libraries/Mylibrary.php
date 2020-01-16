@@ -140,7 +140,20 @@ class Mylibrary{
 		$tahun = substr($tgl,0,4);
 		return $tanggal.'/'.$bulan;		 
 	}
+
+	function notification($title, $text, $type, $location){
+        return "<script>
+                    swal({
+                        title: \"{$title}\",
+                        text: \"{$text}\",
+                        type: \"{$ype}\"
+                    }, function(){
+                            window.location.href = \"{$location}\";
+                    });
+                </script>";
+    }
 }
+
 
 
 

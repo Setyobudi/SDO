@@ -110,4 +110,14 @@ class Model_app extends CI_model{
                                     (SELECT id_kategori, sum(dibaca) as jum_dibaca FROM berita GROUP BY id_kategori) as b on a.id_kategori=b.id_kategori) as c 
                                         where c.aktif='Y' ORDER BY c.jum_dibaca DESC LIMIT $limit");
     }
+
+    function fetch_data($limit, $start)
+	{
+
+		$this->db->select("*");
+		$this->db->order_by("id_produk", "ASC");
+		$this->db->limit($limit, $start);
+		$query = $this->db->get('rb_produk');
+		return $query;
+	}
 }

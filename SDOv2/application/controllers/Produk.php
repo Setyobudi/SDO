@@ -15,7 +15,7 @@ class Produk extends CI_Controller {
 		$jumlah= $this->model_app->view('rb_produk')->num_rows();
 		$config['base_url'] = base_url().'produk/index';
 		$config['total_rows'] = $jumlah;
-		$config['per_page'] = 24; 	
+		$config['per_page'] = 12; 	
 		if ($this->uri->segment('3')==''){
 			$dari = 0;
 		}else{
@@ -25,6 +25,7 @@ class Produk extends CI_Controller {
 		if (is_numeric($dari)) {
 			if ($this->input->post('kata')){
 				$data['title'] = "Hasil Pencarian - ''".cetak($this->input->post('kata'))."''";
+				$data['judul'] = $data['title'];
 				$data['a'] = $data['title'];
 				$data['description'] = description();
 				$data['keywords'] = keywords();
@@ -32,6 +33,7 @@ class Produk extends CI_Controller {
 			}else{
 				$data['title'] = title();
 				$data['a'] = 'Semua Produk Kami';
+				$data['judul'] = $data['a'];
 				$data['description'] = description();
 				$data['keywords'] = keywords();
 				$this->pagination->initialize($config);
@@ -43,6 +45,79 @@ class Produk extends CI_Controller {
 		}else{
 			redirect('main');
 		}
+	}
+
+	function fetch_produk()
+	{
+		$output = '';
+		$data = $this->model_app->fetch_data($this->input->post('limit'), $this->input->post('start'));
+		if($data->num_rows() > 0)
+		{
+			foreach($data->result_array() as $row)
+			{
+				$ex = explode(';', $row['gambar']);
+				if (trim($ex[0])==''){ 
+					$foto_produk = 'no-produk.png';
+					$foto_produk_hover = 'no-produk.png';
+				}else{
+					$foto_produk = $ex[0];
+					$foto_produk_hover = $ex[1]; 
+				}
+				if (strlen($row['nama_produk']) > 20){ $judul = substr($row['nama_produk'],0,20).',..';  }else{ $judul = $row['nama_produk']; }
+				$jual = $this->model_reseller->jual_reseller($row['id_reseller'],$row['id_produk'])->row_array();
+				$beli = $this->model_reseller->beli_reseller($row['id_reseller'],$row['id_produk'])->row_array();
+				if ($beli['beli']-$jual['jual']<=0){ $stok = '<b style="color:#000">Stok Habis</b>'; }else{ $stok = "<span style='color:green'>Stok ".($beli['beli']-$jual['jual'])." $row[satuan]</span>"; }
+
+				$disk = $this->model_app->view_where("rb_produk_diskon",array('id_produk'=>$row['id_produk']))->row_array();
+				$diskon = rupiah(($disk['diskon']/$row['harga_konsumen'])*100,0)."%";
+				if ($diskon>0){ $diskon_persen = "<span class='discount-rect'>$diskon</span>"; }else{ $diskon_persen = ''; }
+				if ($diskon>=1){ 
+					$harga =  "<del style='color:#8a8a8a'><small>Rp ".rupiah($row['harga_konsumen'])."</small></del> Rp ".rupiah($row['harga_konsumen']-$disk['diskon']);
+				}else{
+					$harga =  "Rp ".rupiah($row['harga_konsumen']);
+				}
+
+				$output .= "<div class='col-md-4 col-sm-6 col-xs-12'>
+							<div class='item item-hover'>
+								<div class='item-image-wrapper'>
+									<figure class='item-image-container'>
+										<a data-toggle='tooltip' data-placement='top' title='".$row['nama_produk']."' href='".base_url()."produk/detail/$row[id_produk]/$row[produk_seo]'>
+										<img class='item-image' style=' min-height:195px; width:100%' src='".base_url()."asset/foto_produk/$foto_produk'>
+										<img class='item-image-hover' style=' min-height:195px; width:100%' src='".base_url()."asset/foto_produk/$foto_produk_hover'>
+										</a>
+									</figure>
+									<!-- <div class='item-price-container'>
+										<span class='item-price'><%= number_to_currency(row['harga_konsumen'], unit: 'Rp. ', separator: ',', delimiter: '.', precision:0) %></span>
+										</div> End .item-price-container -->
+									<!-- <span class='new-rect'>New</span> -->
+									$diskon_persen
+								</div><!-- End .item-image-wrapper -->
+								<div class='item-meta-container'>
+									<div class='ratings-container'>
+										<div class='ratings'>
+											<div class='ratings-result' data-result='80'></div>
+										</div><!-- End .ratings -->
+										<span class='ratings-amount'>
+											5 Reviews
+										</span>
+									</div><!-- End .rating-container -->
+									<h3 class='item-name'><a data-toggle='tooltip' data-placement='top' title='".$row['nama_produk']."' href='".base_url()."produk/detail/$row[id_produk]/$row[produk_seo]'>$judul</a></h3>
+										<h5><span>$harga</span></h4>
+									<div class='item-action'>
+										<a href='".base_url()."produk/detail/$row[id_produk]/$row[produk_seo]' class='item-add-btn'>
+											<span class='icon-cart-text'><i class='fa fa-shopping-cart'> Beli</i></span>
+										</a>
+										<div class='item-action-inner'>
+											<a href='#' class='icon-button icon-like'>Favourite</a>
+											<a href='#' class='icon-button icon-compare'>Checkout</a>
+										</div><!-- End .item-action-inner -->
+									</div><!-- End .item-action -->
+								</div><!-- End .item-meta-container --> 
+							</div><!-- End .item -->
+						</div><!-- End .col-md-4 -->";
+			}
+		}
+		echo $output;
 	}
 
 	function kategori(){
