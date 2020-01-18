@@ -1,0 +1,10 @@
+2019-11-13T06:28:03+00:00 CRITICAL Uncaught TypeError: Argument 2 passed to WPSEO_Link_Watcher::save_post() must be an instance of WP_Post, null given, called in C:\xampp\htdocs\SDO\wp-includes\class-wp-hook.php on line 288 and defined in C:\xampp\htdocs\SDO\wp-content\plugins\wordpress-seo\admin\links\class-link-watcher.php:47
+Stack trace:
+#0 C:\xampp\htdocs\SDO\wp-includes\class-wp-hook.php(288): WPSEO_Link_Watcher->save_post(0, NULL)
+#1 C:\xampp\htdocs\SDO\wp-includes\class-wp-hook.php(310): WP_Hook->apply_filters(NULL, Array)
+#2 C:\xampp\htdocs\SDO\wp-includes\plugin.php(465): WP_Hook->do_action(Array)
+#3 C:\xampp\htdocs\SDO\wp-includes\post.php(3951): do_action('save_post', 0, NULL, false)
+#4 C:\xampp\htdocs\SDO\wp-content\plugins\woocommerce\includes\libraries\action-scheduler\classes\ActionScheduler_wpPostStore.php(52): wp_insert_post(Array)
+#5 C:\xampp\htdocs\SDO\wp-content\plugins\woocommerce\includes\libraries\action-scheduler\classes\ActionScheduler_wpPostStore.php(21): ActionScheduler_wpPostStore->save_post_array(Array)
+#6 C:\xampp di C:\xampp\htdocs\SDO\wp-content\plugins\wordpress-seo\admin\links\class-link-watcher.php pada baris 47
+
